@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from store import add
 
 
 def scrap(data):
@@ -27,7 +28,7 @@ def style(data):
 
 
 # It will find all the events on the page and then save it in the database
-def events_collector(ManyTr):
+def events_collector(ManyTr, month):
     # Event
 
     day_of_week_dict = {
@@ -80,7 +81,15 @@ def events_collector(ManyTr):
                 NepDate = scrap(NepDate)
                 EngDate = scrap(EngDate)
                 day = day_of_week_dict.get(a)
-                print((Events, Color_code, day, tithi, EngDate, NepDate))
+                add(
+                    date=f"2080-{month}-{NepDate}",
+                    Events=Events,
+                    Color_code=Color_code,
+                    day=day,
+                    tithi=tithi,
+                    EngDate=EngDate,
+                    NepDate=NepDate,
+                )
 
             # ...
 
@@ -102,25 +111,26 @@ def events_collector(ManyTr):
 
 
 # Now using the page source code and parsing it to bs4
-def get_content(page_source):
+def get_content(page_source, month):
     soup = BeautifulSoup(page_source, "html.parser")
     table = soup.find("table", {"id": "calendartable"})
     ManyTr = soup.find_all("tr")
-    events_collector(ManyTr=ManyTr)
+    events_collector(ManyTr=ManyTr, month=month)
 
 
-# Set up Selenium options
-chrome_options = Options()
-chrome_options.add_argument("--headless")  # Run Chrome in headless mode
+def dynamic_page_scrape(url, month):
+    # Set up Selenium options
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run Chrome in headless mode
 
-# Set path to chromedriver executable (Update with your own path)
-chromedriver_path = "/chromedriver/chromedriver"
+    # Set path to chromedriver executable (Update with your own path)
+    chromedriver_path = "/chromedriver/chromedriver"
 
-# Create a new Selenium web driver with the specified options
-driver = webdriver.Chrome(service=Service(chromedriver_path), options=chrome_options)
+    # Create a new Selenium web driver with the specified options
+    driver = webdriver.Chrome(
+        service=Service(chromedriver_path), options=chrome_options
+    )
 
-
-def dynamic_page_scrape(url):
     # Define the URL
 
     # Navigate to the URL
@@ -134,11 +144,38 @@ def dynamic_page_scrape(url):
 
     # Get the page source code
     page_source = driver.page_source
-    get_content(page_source=page_source)
+    get_content(page_source=page_source, month=month)
     driver.quit()
 
 
 # print(table.prettify())
 # Close the browser
 
-dynamic_page_scrape(url="https://www.ashesh.com.np/nepali-calendar/")
+
+# dynamic_page_scrape()
+nepali_months = {
+    1: "Baishakh",
+    2: "Jestha",
+    3: "Ashadh",
+    4: "Shrawan",
+    5: "Bhadra",
+    6: "Ashwin",
+    7: "Kartik",
+    8: "Mangsir",
+    9: "Poush",
+    10: "Magh",
+    11: "Falgun",
+    12: "Chaitra",
+}
+import time
+
+for month in nepali_months:
+    print("----------------------------")
+    url = f"https://www.ashesh.com.np/nepali-calendar/?month={nepali_months[month]}"
+    print(url)
+    dynamic_page_scrape(
+        url=url,
+        month=month,
+    )
+    print("-------------------------")
+    time.sleep(10)
