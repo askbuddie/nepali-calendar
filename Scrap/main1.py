@@ -71,6 +71,7 @@ def events_collector(ManyTr, month):
                 and NepDate is not None
                 and EngDate is not None
             ):
+                # print(td)
                 Events.append(scrap(event))
                 Color_code.append(style(event))
                 Events.append(scrap(left_event))
@@ -90,24 +91,19 @@ def events_collector(ManyTr, month):
                     EngDate=EngDate,
                     NepDate=NepDate,
                 )
+                # print(
+                #     (
+                #         f"2080-{month}-{NepDate}",
+                #         Events,
+                #         Color_code,
+                #         day,
+                #         tithi,
+                #         EngDate,
+                #         NepDate,
+                #     )
+                # )
 
-            # ...
-
-            # print(day_of_week_dict.get(a))
-            # print(td)
             a += 1
-
-        # x = td.find("div", {"class": "event_one"})
-        # Checking the td of only calender
-        # if x is not None:
-        #     data = x.get_text(strip=True)
-        #     print(a)
-        #     a += 1
-        #     if not data:
-        #         print("No Event")
-        #     else:
-        #         # Print the div content
-        #         print(data)
 
 
 # Now using the page source code and parsing it to bs4
@@ -167,15 +163,16 @@ nepali_months = {
     11: "Falgun",
     12: "Chaitra",
 }
-import time
+
+# import time
 
 for month in nepali_months:
     print("----------------------------")
-    url = f"https://www.ashesh.com.np/nepali-calendar/?month={nepali_months[month]}"
+    url = f"https://www.ashesh.com.np/nepali-calendar/?year=2080&month={nepali_months[month]}"
     print(url)
     dynamic_page_scrape(
         url=url,
         month=month,
     )
     print("-------------------------")
-    time.sleep(10)
+    # time.sleep(10)
