@@ -168,7 +168,7 @@ nepali_months = {
 
 for month in nepali_months:
     print("----------------------------")
-    url = f"https://www.ashesh.com.np/nepali-calendar/?year=2080&month={nepali_months[month]}"
+    url = f"Link={nepali_months[month]}"
     print(url)
     dynamic_page_scrape(
         url=url,
