@@ -48,16 +48,16 @@ def search_data_by_year_and_month(year, month):
                 events = queried_date.events
                 result = {
                     "date": queried_date.date,
-                    "Nepali Date": queried_date.NepDate,
-                    "English Date": queried_date.EngDate,
-                    "Day": queried_date.Day,
-                    "Tithi": queried_date.tithi,
+                    "nepaliDate": queried_date.NepDate,
+                    "englishDate": queried_date.EngDate,
+                    "day": queried_date.Day,
+                    "tithi": queried_date.tithi,
                     "events": [],
                 }
 
                 for event in events:
                     result["events"].append(
-                        {"Event Title": event.title, "Event Color": event.color}
+                        {"eventTitle": event.title, "eventColor": event.color}
                     )
 
                 results.append(result)
