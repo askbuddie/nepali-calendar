@@ -1,14 +1,28 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, url_for
 import json
 import urllib
 
 app = Flask(__name__)
 
 # Replace this with the actual URL of your backend API
-url = "https://caleneder.dipeshsharma5.repl.co/calender?month=Mangsir&year=2080"
 
 
-#
+nep_month = [
+    "Baishakh",
+    "Jestha",
+    "Ashadh",
+    "Shrawan",
+    "Bhadra",
+    "Ashwin",
+    "Kartik",
+    "Mangsir",
+    "Poush",
+    "Magh",
+    "Falgun",
+    "Chaitra",
+]
+
+
 days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
 
@@ -51,15 +65,82 @@ def mod(data):
     return new_data
 
 
-@app.route("/")
-def get_events():
+def next(month):
+    index = nep_month.index(month) + 1
+    print(index)
+    print("--------------------")
+    if index > 11:
+        return None
+
+    return nep_month[index]
+
+
+def previous(month):
+    index = nep_month.index(month) - 1
+    if index < 0:
+        return None
+    return nep_month[index]
+
+
+@app.route("/<month>")
+def get_events(month):
+    if month is None:
+        month = "Baishakh"
+
     # Fetch data from your backend API
     # You can use libraries like requests or urllib to make HTTP requests
+    print(month)
+    url = f"https://caleneder.dipeshsharma5.repl.co/calender?month={month}&year=2080"
+    print(url)
     response = urllib.request.urlopen(url)
     data = response.read()
     dict = mod(json.loads(data))
+    next_month = next(month=month)
+    if next_month is None:
+        next_month_url = "#"
+    else:
+        next_month_url = url_for("get_events", month=next_month)
+    previous_month = previous(month=month)
+    if previous_month is None:
+        previous_month_url = "#"
+    else:
+        previous_month_url = url_for("get_events", month=previous_month)
 
-    return render_template("index.html", events=dict)
+    return render_template(
+        "index.html",
+        events=dict,
+        next_month_url=next_month_url,
+        previous_month_url=previous_month_url,
+    )
+
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
+
+
+@app.route("/")
+def events(month="Baishakh"):
+    # Fetch data from your backend API
+    # You can use libraries like requests or urllib to make HTTP requests
+
+    url = f"https://caleneder.dipeshsharma5.repl.co/calender?month={month}&year=2080"
+    print(url)
+    response = urllib.request.urlopen(url)
+    data = response.read()
+    dict = mod(json.loads(data))
+    next_month = next(month=month)
+    if next_month is None:
+        next_month_url = "#"
+    else:
+        next_month_url = url_for("get_events", month=next_month)
+    previous_month_url = "#"
+
+    return render_template(
+        "index.html",
+        events=dict,
+        next_month_url=next_month_url,
+        previous_month_url=previous_month_url,
+    )
 
 
 if __name__ == "__main__":
