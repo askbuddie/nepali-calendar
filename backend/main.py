@@ -35,9 +35,9 @@ from sqlalchemy.orm import Session
 def search_data_by_year_and_month(year, month):
     with Session(engine) as session:
         # Form the search string for the year and month (e.g., "2078-10%")
-        search_string = f"{year}-{month}%"
+        search_string = f"{year}-{month}-%"
 
-        # Query the Date objects with the search string
+        # Query the Date objects with the search string session.query(Date).filter(Date.date.like(pattern)).all()
         queried_dates = session.query(Date).filter(Date.date.like(search_string)).all()
         print(queried_dates)
 
@@ -67,7 +67,6 @@ def search_data_by_year_and_month(year, month):
     return None
 
 
-
 nepali_month_dict = {
     "Baishakh": 1,
     "Jestha": 2,
@@ -80,36 +79,36 @@ nepali_month_dict = {
     "Poush": 9,
     "Magh": 10,
     "Falgun": 11,
-    "Chaitra": 12
+    "Chaitra": 12,
 }
 
 
-
-from flask import Flask,request
+from flask import Flask, request
 from bleach import clean
+
 app = Flask(__name__)
 
 
-years=[2080]
+years = [2080]
 
-@app.route('/calender',methods=["GET"])
+
+@app.route("/calender", methods=["GET"])
 def main():
     # Example usage
     args = request.args
     year_to_search = clean(args.get("year"))  # Replace with the year you want to search
-    month_index=nepali_month_dict.get(clean(args.get("month") ))
+    month_index = nepali_month_dict.get(clean(args.get("month")))
     if int(year_to_search) in years:
-        if month_index is not None:            
+        if month_index is not None:
             queried_data = search_data_by_year_and_month(year_to_search, month_index)
             return queried_data
-            
-        else:
-            return"You have eneterd wrong month name!"
-        
-        
-    else:
-        return "Data does not exist",400
 
-  
-if __name__ == '__main__':
+        else:
+            return "You have eneterd wrong month name!"
+
+    else:
+        return "Data does not exist", 400
+
+
+if __name__ == "__main__":
     app.run()
